@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookSamsysAPI.Migrations
 {
     [DbContext(typeof(BookDbContext))]
-    [Migration("20240315175016_Initial")]
-    partial class Initial
+    [Migration("20240315185012_Initial Migration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

@@ -32,15 +32,12 @@ namespace BookSamsysAPI.Controllers
 
             var dbBooks = await dbContext.Books.ToListAsync();
 
-            ArrayList books = new ArrayList();
-
             foreach (var book in dbBooks)
             {
-                if (book.ISBN == ISBN) books.Add(book);
+                if (book.ISBN == ISBN) return Ok(book);
             }
 
-            if (books.Count == 0) return NotFound(new Error("Book Not Found", $"No book was found with this ISBN: {ISBN}."));
-            return Ok(books);
+            return NotFound(new Error("Book Not Found", $"No book was found with this ISBN: {ISBN}."));
         }
 
 
@@ -82,6 +79,7 @@ namespace BookSamsysAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> AddBook(AddBookRequest addBook)
         {
+
             var book = new Book()
             {
                 Id = Guid.NewGuid(),
@@ -105,6 +103,47 @@ namespace BookSamsysAPI.Controllers
             await dbContext.SaveChangesAsync();
 
             return Ok(book);
+        }
+
+        // PUT: api/books
+        [HttpPut("isbn/{ISBN}")]
+        public async Task<IActionResult> UpdateBook(string ISBN, UpdateBookRequest updateBook)
+        {
+            //If the ISBN has not 13 digits return errpr
+            if (ISBN.Length != 13) return BadRequest(new Error("Wrong ISBN", "The ISBN must has 13 digits"));
+
+            //Get all books from DB
+            var dbBooks = await dbContext.Books.ToListAsync();
+
+            //Find the book with the inputed ISBN
+            foreach (Book entry in dbBooks)
+            {
+                //If book was found update it
+                if (entry.ISBN == ISBN)
+                {
+                    entry.ISBN = updateBook.ISBN;
+                    entry.Name = updateBook.Name;
+                    entry.Author = updateBook.Author;
+                    entry.Price = updateBook.Price;
+
+                    //If the price is negative return error
+                    if (updateBook.Price < 0) return BadRequest(new Error("Negative Price", "The price cannot be less than 0."));
+
+                    //If the ISBN has not 13 digits return error
+                    if (updateBook.ISBN.Length != 13) return BadRequest(new Error("Wrong ISBN", "The ISBN must be 13 digits"));
+
+                    //Save changes on DB
+                    await dbContext.SaveChangesAsync();
+
+                    return Ok(entry);
+
+                }
+            }
+
+            //If any book was found return error
+            return NotFound(new Error("Book Not Found", $"No book was found with this ISBN: {ISBN}."));
+
+ 
         }
 
     }
