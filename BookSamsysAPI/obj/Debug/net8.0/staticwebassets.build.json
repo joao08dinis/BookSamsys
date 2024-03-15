@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "u+grlm5PYLj9D5gdERgXXHCt3sAZzLzSDlZrj9C4/ns=",
+  "Source": "BookSamsysAPI",
+  "BasePath": "_content/BookSamsysAPI",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

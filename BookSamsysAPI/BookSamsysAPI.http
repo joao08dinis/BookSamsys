@@ -1,0 +1,6 @@
+@BookSamsysAPI_HostAddress = http://localhost:5118
+
+GET {{BookSamsysAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
