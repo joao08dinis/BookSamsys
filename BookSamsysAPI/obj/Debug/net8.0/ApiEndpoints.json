@@ -10,6 +10,54 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "BookSamsysAPI.Controllers.BooksController",
+    "Method": "GetBookByAuthor",
+    "RelativePath": "api/Books/author/{author}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Author",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "BookSamsysAPI.Controllers.BooksController",
+    "Method": "GetBookByISBN",
+    "RelativePath": "api/Books/isbn/{ISBN}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "ISBN",
+        "Type": "System.Int64",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "BookSamsysAPI.Controllers.BooksController",
+    "Method": "GetBookByName",
+    "RelativePath": "api/Books/name/{name}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Name",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "BookSamsysAPI.Controllers.WeatherForecastController",
     "Method": "Get",
     "RelativePath": "WeatherForecast",
