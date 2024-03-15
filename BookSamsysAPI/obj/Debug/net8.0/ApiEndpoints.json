@@ -10,8 +10,7 @@
     "ReturnTypes": []
   },
   {
-<<<<<<< Updated upstream
-=======
+
     "ContainingType": "BookSamsysAPI.Controllers.BooksController",
     "Method": "AddBook",
     "RelativePath": "api/Books",
@@ -31,6 +30,7 @@
     "ContainingType": "BookSamsysAPI.Controllers.BooksController",
     "Method": "GetBookByAuthor",
     "RelativePath": "api/Books/author/{Author}",
+
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -54,6 +54,7 @@
       {
         "Name": "ISBN",
         "Type": "System.String",
+
         "IsRequired": true
       }
     ],
@@ -62,7 +63,8 @@
   {
     "ContainingType": "BookSamsysAPI.Controllers.BooksController",
     "Method": "GetBookByName",
-    "RelativePath": "api/Books/name/{Name}",
+
+    "RelativePath": "api/Books/name/{name}",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -76,7 +78,6 @@
     "ReturnTypes": []
   },
   {
->>>>>>> Stashed changes
     "ContainingType": "BookSamsysAPI.Controllers.WeatherForecastController",
     "Method": "Get",
     "RelativePath": "WeatherForecast",
