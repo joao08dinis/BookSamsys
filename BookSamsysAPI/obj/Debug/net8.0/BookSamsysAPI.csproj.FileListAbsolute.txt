@@ -252,3 +252,4 @@ E:\Documentos\Estagio\BookSamsys\BookSamsysAPI\bin\Debug\net8.0\runtimes\win\lib
 E:\Documentos\Estagio\BookSamsys\BookSamsysAPI\bin\Debug\net8.0\runtimes\win\lib\net7.0\System.Windows.Extensions.dll
 E:\Documentos\Estagio\BookSamsys\BookSamsysAPI\obj\Debug\net8.0\BookSamsysAPI.RazorAssemblyInfo.cache
 E:\Documentos\Estagio\BookSamsys\BookSamsysAPI\obj\Debug\net8.0\BookSamsysAPI.RazorAssemblyInfo.cs
+E:\Documentos\Estagio\BookSamsys\BookSamsysAPI\obj\Debug\net8.0\BookSamsysAPI.sourcelink.json
