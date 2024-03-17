@@ -2,10 +2,10 @@
 {
     public class UpdateBookRequest
     {
-        public string ISBN { get; set; }
-        public string Name { get; set; }
-        public string Author { get; set; }
-        public float Price { get; set; }
+        public string iSBN { get; set; }
+        public string name { get; set; }
+        public string author { get; set; }
+        public float price { get; set; }
 
     }
 }

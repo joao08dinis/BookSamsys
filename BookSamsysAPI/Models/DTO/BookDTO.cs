@@ -1,11 +1,10 @@
-﻿namespace BookSamsysAPI.Models
+﻿namespace BookSamsysAPI.Models.DTO
 {
-    public class AddBookRequest
+    public class BookDTO
     {
-        public string iSBN { get; set; }
         public string name { get; set; }
+        public string iSBN { get; set; }
         public string author { get; set; }
         public float price { get; set; }
-
     }
 }
