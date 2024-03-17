@@ -1,4 +1,4 @@
-﻿using BookSamsysAPI.Models;
+﻿using BookSamsysAPI.Models.Doman;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookSamsysAPI.Data

@@ -4,6 +4,10 @@ using Microsoft.EntityFrameworkCore;
 using System.Configuration;
 using BookSamsysAPI.Models;
 using System.Collections;
+using BookSamsysAPI.Models.Doman;
+using BookSamsysAPI.Repositories;
+using BookSamsysAPI.Services;
+using BookSamsysAPI.Models.DTO;
 
 namespace BookSamsysAPI.Controllers
 {
@@ -11,140 +15,162 @@ namespace BookSamsysAPI.Controllers
     [Route("api/[controller]")]
     public class BooksController : Controller
     {
-        private readonly BookDbContext dbContext;
 
-        public BooksController(BookDbContext dbContext)
+        private readonly BookService service;
+
+        public BooksController(BookService service)
         {
-            this.dbContext = dbContext;
+            this.service = service;
         }
+
+        // GET: api/books
         [HttpGet]
         public async Task<IActionResult> GetBooks()
         {
-            return Ok(await dbContext.Books.ToListAsync());
+            //Get all books from DB
+            var books = await service.GetBooks();
+            
+            //If no book was found return an error
+            if(books.Count == 0)  
+                return NotFound(new Error("Books Not Found", $"No book was found."));
+            
+            //Return all books from DB
+            return Ok(books);
         }
 
 
         // GET: api/books/isbn/{isbn}
-        [HttpGet("isbn/{ISBN}")]
-        public async Task<IActionResult> GetBookByISBN(string ISBN)
+        [HttpGet("isbn/{iSBN}")]
+        public async Task<IActionResult> GetBookByISBN(string iSBN)
         {
-            if (ISBN.Length != 13) return BadRequest(new Error("Wrong ISBN", "The ISBN must has 13 digits"));
+            //If the ISBN has not 13 digits return errpr
+            if (iSBN.Length != 13) return BadRequest(new Error("Wrong ISBN", "The ISBN must has 13 digits"));
 
-            var dbBooks = await dbContext.Books.ToListAsync();
+            //Get book with that ISBN from DB
+            var book = await service.GetBookByISBN(iSBN);
 
-            foreach (var book in dbBooks)
-            {
-                if (book.ISBN == ISBN) return Ok(book);
-            }
+            if(book!=null) return Ok(book);
 
-            return NotFound(new Error("Book Not Found", $"No book was found with this ISBN: {ISBN}."));
+            //If no book was found return an error
+            return NotFound(new Error("Book Not Found", $"No book was found with this ISBN: {iSBN}."));
         }
 
 
         // GET: api/books/author/{author}
-        [HttpGet("author/{Author}")]
-        public async Task<IActionResult> GetBookByAuthor(string Author)
+        [HttpGet("author/{author}")]
+        public async Task<IActionResult> GetBookByAuthor(string author)
         {
-            var dbBooks = await dbContext.Books.ToListAsync();
+            //Get books with that Author from DB
+            var books = await service.GetBookByAuthor(author);
 
-            ArrayList books = new ArrayList();
-
-            foreach (var book in dbBooks)
-            {
-                if (book.Author == Author) books.Add(book);
-            }
-
+            //If no book was found return error
             if (books.Count == 0) return NotFound(new Error("Book Not Found", $"No book was found with this Author: {Author}."));
+
+            //Otherwise, return the book
             return Ok(books);
         }
 
         // GET: api/books/name/{name}
-        [HttpGet("name/{Name}")]
-        public async Task<IActionResult> GetBookByName(string Name)
+        [HttpGet("name/{name}")]
+        public async Task<IActionResult> GetBookByName(string name)
         {
-            var dbBooks = await dbContext.Books.ToListAsync();
+            //Get book with that Name from DB
+            var book = await service.GetBookByName(name);
 
-            ArrayList books = new ArrayList();
-
-            foreach (var book in dbBooks)
-            {
-                if (book.Name == Name) books.Add(book);
-            }
-
-            if (books == null) return NotFound(new Error("Book Not Found", $"No book was found with this Name: {Name}."));
-            return Ok(books);
+            //If no book was found return error
+            if (book == null) return NotFound(new Error("Book Not Found", $"No book was found with this Name: {name}."));
+            
+            //Otherwise, return the book
+            return Ok(book);
         }
 
         // POST: api/books
         [HttpPost]
         public async Task<IActionResult> AddBook(AddBookRequest addBook)
         {
-
-            var book = new Book()
+            //Create a book entity
+            var book = new BookDTO()
             {
-                Id = Guid.NewGuid(),
-                Name = addBook.Name,
-                ISBN = addBook.ISBN,
-                Author = addBook.Author,
-                Price = addBook.Price
+                name = addBook.name,
+                iSBN = addBook.iSBN,
+                author = addBook.author,
+                price = addBook.price
             };
 
-            var books = await dbContext.Books.ToListAsync();
+            //If there's a book with that ISBN return error 
+            if(service.GetBookByISBN(book.iSBN)!=null) 
+                return BadRequest(new Error("ISBN already used", $"The ISBN must be unique and there is a book that has already this ISBN: {book.iSBN}."));
 
-            foreach (var book1 in books)
-            {
-                if(book1.ISBN == book.ISBN) return BadRequest(new Error("ISBN already used", $"The ISBN must be unique and there is a book that has already this ISBN: {book.ISBN}."));
-            }
-            if (book.Price < 0) return BadRequest(new Error("Negative Price","The price cannot be less than 0."));
-            if(book.ISBN.Length != 13) return BadRequest(new Error("Wrong ISBN", "The ISBN must be 13 digits"));
+            //If the price of the book is negative return error
+            if (book.price < 0) 
+                return BadRequest(new Error("Negative Price","The price cannot be less than 0."));
+            
+            //If the ISBN has not 13 digitis return error
+            if(book.iSBN.Length != 13) 
+                return BadRequest(new Error("Wrong ISBN", "The ISBN must be 13 digits"));
            
-
-            await dbContext.Books.AddAsync(book);
-            await dbContext.SaveChangesAsync();
+            //Add book to the context
+            await service.AddBook(book);
 
             return Ok(book);
         }
 
-        // PUT: api/books
-        [HttpPut("isbn/{ISBN}")]
-        public async Task<IActionResult> UpdateBook(string ISBN, UpdateBookRequest updateBook)
+        // PUT: api/books/{ISBN}
+        [HttpPut("{iSBN}")]
+        public async Task<IActionResult> UpdateBook(string iSBN, UpdateBookRequest updateBook)
         {
             //If the ISBN has not 13 digits return errpr
-            if (ISBN.Length != 13) return BadRequest(new Error("Wrong ISBN", "The ISBN must has 13 digits"));
-
-            //Get all books from DB
-            var dbBooks = await dbContext.Books.ToListAsync();
+            if (iSBN.Length != 13) 
+                return BadRequest(new Error("Wrong ISBN", "The ISBN must has 13 digits"));
 
             //Find the book with the inputed ISBN
-            foreach (Book entry in dbBooks)
+            var book = await service.GetBookByISBN(iSBN);
+
+            //If no book was found return an error
+            if(book==null) 
+                return NotFound(new Error("Book Not Found", $"No book was found with this ISBN: {iSBN}."));
+
+            //If the price is negative return error
+            if (updateBook.price < 0) 
+                return BadRequest(new Error("Negative Price", "The price cannot be less than 0."));
+
+            //If the ISBN has not 13 digits return error
+            if (updateBook.iSBN.Length != 13) 
+                return BadRequest(new Error("Wrong ISBN", "The ISBN must be 13 digits"));
+
+            var dto = new BookDTO()
             {
-                //If book was found update it
-                if (entry.ISBN == ISBN)
-                {
-                    entry.ISBN = updateBook.ISBN;
-                    entry.Name = updateBook.Name;
-                    entry.Author = updateBook.Author;
-                    entry.Price = updateBook.Price;
+                iSBN = updateBook.iSBN,
+                author = updateBook.author,
+                price = updateBook.price,
+                name = updateBook.name
+            };
 
-                    //If the price is negative return error
-                    if (updateBook.Price < 0) return BadRequest(new Error("Negative Price", "The price cannot be less than 0."));
+            await service.UpdateBookAsync(dto);
 
-                    //If the ISBN has not 13 digits return error
-                    if (updateBook.ISBN.Length != 13) return BadRequest(new Error("Wrong ISBN", "The ISBN must be 13 digits"));
+            return Ok(book);
 
-                    //Save changes on DB
-                    await dbContext.SaveChangesAsync();
-
-                    return Ok(entry);
-
-                }
-            }
-
-            //If any book was found return error
-            return NotFound(new Error("Book Not Found", $"No book was found with this ISBN: {ISBN}."));
-
- 
         }
 
+        // DELETE: api/books/{isbn}
+        [HttpDelete]
+        [Route("{iSBN}")]
+        public async Task<IActionResult> deleteBook(string iSBN)
+        {
+            //If the ISBN has not 13 digits return errpr
+            if (iSBN.Length != 13) 
+                return BadRequest(new Error("Wrong ISBN", "The ISBN must has 13 digits"));
+
+            //Find the book with the inputed ISBN
+            var book = await service.GetBookByISBN(iSBN);
+
+            //If no book was found return an error
+            if (book == null)
+                return NotFound(new Error("Book Not Found", $"No book was found with this ISBN: {iSBN}."));
+
+            service.RemoveBook(book);
+
+            return Ok();
+        }
     }
 }

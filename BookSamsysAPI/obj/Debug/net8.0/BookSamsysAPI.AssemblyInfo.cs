@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BookSamsysAPI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+212063a212f4b7dae43aa444b1140071e6aabe76")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+12fcf57effff43eef3b1e83c8701fedea1f9a9fa")]
 [assembly: System.Reflection.AssemblyProductAttribute("BookSamsysAPI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BookSamsysAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
