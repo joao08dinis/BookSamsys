@@ -1,4 +1,7 @@
 using BookSamsysAPI.Data;
+using BookSamsysAPI.Models.Mappers;
+using BookSamsysAPI.Repositories;
+using BookSamsysAPI.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +14,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<BookDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("ApiConnectionString")));
+
+builder.Services.AddScoped<BookService>();
+builder.Services.AddScoped<BookRepository>();
+
+builder.Services.AddAutoMapper(typeof(Program));
 
 var app = builder.Build();
 

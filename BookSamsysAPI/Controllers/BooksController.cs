@@ -8,6 +8,7 @@ using BookSamsysAPI.Models.Doman;
 using BookSamsysAPI.Repositories;
 using BookSamsysAPI.Services;
 using BookSamsysAPI.Models.DTO;
+using Microsoft.AspNetCore.Http;
 
 namespace BookSamsysAPI.Controllers
 {
@@ -16,7 +17,13 @@ namespace BookSamsysAPI.Controllers
     public class BooksController : Controller
     {
 
+        const string ERROR_TYPE_ISBN = "ISBN";
+        const string ERROR_TYPE_EXISTING_BOOK = "Existing Book";
+        const string ERROR_TYPE_PRICE = "Price";
+        const string ERROR_TYPE_NOCONTENT = "No Content";
+
         private readonly BookService service;
+
 
         public BooksController(BookService service)
         {
@@ -27,15 +34,27 @@ namespace BookSamsysAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetBooks()
         {
-            //Get all books from DB
-            var books = await service.GetBooks();
-            
-            //If no book was found return an error
-            if(books.Count == 0)  
-                return NotFound(new Error("Books Not Found", $"No book was found."));
-            
-            //Return all books from DB
-            return Ok(books);
+            try
+            {
+                //Get all books from DB
+                MessagingHelper message = service.GetBooks();
+                
+                //If no book was found return an error
+                if(message.Success && message.Obj==null)  
+                    return NoContent();
+
+                //Return all books from DB
+                if (message.Success && message.Obj != null)
+                    return Ok(message.Obj);
+
+                //Return error
+                throw new Exception();
+
+            } catch (Exception e)
+            {
+                return BadRequest(new MessagingHelper("Error", e.Message,false));
+            }
+           
         }
 
 
@@ -43,16 +62,31 @@ namespace BookSamsysAPI.Controllers
         [HttpGet("isbn/{iSBN}")]
         public async Task<IActionResult> GetBookByISBN(string iSBN)
         {
-            //If the ISBN has not 13 digits return errpr
-            if (iSBN.Length != 13) return BadRequest(new Error("Wrong ISBN", "The ISBN must has 13 digits"));
+            try
+            {
+                //Get book from DB
+                MessagingHelper message = service.GetBooks();
 
-            //Get book with that ISBN from DB
-            var book = await service.GetBookByISBN(iSBN);
+                //If the ISBN has not 13 digits return errpr
+                if (!message.Success)
+                    return BadRequest(new MessagingHelper("Wrong ISBN", "The ISBN must has 13 digits", iSBN, false));
 
-            if(book!=null) return Ok(book);
+                //If no book was found
+                if (message.Success && message.Obj == null)
+                    return NotFound(new MessagingHelper("Book Not Found", $"No book was found with this ISBN", iSBN, true));
+                
+                //Return the book 
+                if(message.Success && message.Obj != null)
+                    return Ok(new MessagingHelper("Success", "Book found", message.Obj, true));
 
-            //If no book was found return an error
-            return NotFound(new Error("Book Not Found", $"No book was found with this ISBN: {iSBN}."));
+                //Otherwise return error
+                throw new Exception();
+
+            } catch (Exception e)
+            {
+                return BadRequest(new MessagingHelper("Error", e.Message,iSBN, false));
+            } 
+            
         }
 
 
@@ -60,95 +94,150 @@ namespace BookSamsysAPI.Controllers
         [HttpGet("author/{author}")]
         public async Task<IActionResult> GetBookByAuthor(string author)
         {
-            //Get books with that Author from DB
-            var books = await service.GetBookByAuthor(author);
+            try
+            {
+                //Get books from DB
+                MessagingHelper message = service.GetBooks();
 
-            //If no book was found return error
-            if (books.Count == 0) return NotFound(new Error("Book Not Found", $"No book was found with this Author: {Author}."));
+                //If no book was found
+                if (message.Obj == null)
+                    return NotFound(new MessagingHelper("Book Not Found", $"No book was found with this Author", author, true));
 
-            //Otherwise, return the book
-            return Ok(books);
+                //Return the book 
+                if (message.Obj != null)
+                    return Ok(new MessagingHelper("Success", "Book found", message.Obj, true));
+
+                //Otherwise return error
+                throw new Exception();
+
+            } catch (Exception e)
+            {
+                return BadRequest(new MessagingHelper("Error", e.Message, false));
+            }   
+            
         }
 
         // GET: api/books/name/{name}
         [HttpGet("name/{name}")]
         public async Task<IActionResult> GetBookByName(string name)
         {
-            //Get book with that Name from DB
-            var book = await service.GetBookByName(name);
+            try
+            {
+                //Get book from DB
+                MessagingHelper message = service.GetBooks();
 
-            //If no book was found return error
-            if (book == null) return NotFound(new Error("Book Not Found", $"No book was found with this Name: {name}."));
+                //If no book was found
+                if (message.Obj == null)
+                    return NotFound(new MessagingHelper("Book Not Found", $"No book was found with this Name", name, true));
+
+                //Return the book 
+                if (message.Obj != null)
+                    return Ok(new MessagingHelper("Success", "Book found", message.Obj, true));
+
+                //Otherwise return error
+                throw new Exception();
+
+            } catch (Exception e)
+            {
+                return BadRequest(new MessagingHelper("Error", e.Message, false));
+            }
             
-            //Otherwise, return the book
-            return Ok(book);
         }
 
         // POST: api/books
         [HttpPost]
-        public async Task<IActionResult> AddBook(AddBookRequest addBook)
+        public async Task<IActionResult> AddBook(BookDTO addBook)
         {
-            //Create a book entity
-            var book = new BookDTO()
+            try
             {
-                name = addBook.name,
-                iSBN = addBook.iSBN,
-                author = addBook.author,
-                price = addBook.price
-            };
+                //Create a book entity
+                MessagingHelper book = service.AddBook(addBook);
+                
+                //Check errors
+                if(!book.Success)
+                {
+                    if(book.Type == ERROR_TYPE_ISBN)
+                    {
+                        //If the ISBN has not 13 digits
+                        return BadRequest(new MessagingHelper("Wrong ISBN", "The ISBN must has 13 digits", addBook, false));
+                    } else if(book.Type == ERROR_TYPE_EXISTING_BOOK)
+                    {
+                        //If the ISBN is already used
+                        return BadRequest(new MessagingHelper("Existing Book", $"The ISBN must be unique and there is a book that has already this ISBN.", addBook, false));
+                    } else if(book.Type == ERROR_TYPE_PRICE)
+                    {
+                        //If the price is negative
+                        return BadRequest(new MessagingHelper("Price", "The price cannot be less than 0.", addBook, false));
+                    } else if(book.Type == "Error")
+                    {
+                        //If there was an error
+                        throw new Exception();
+                    }
+                }
 
-            //If there's a book with that ISBN return error 
-            if(service.GetBookByISBN(book.iSBN)!=null) 
-                return BadRequest(new Error("ISBN already used", $"The ISBN must be unique and there is a book that has already this ISBN: {book.iSBN}."));
+                //If the book was created return it
+                if(book.Obj != null)
+                    return Ok(new MessagingHelper("Success","Book Created!",book.Obj,true));
 
-            //If the price of the book is negative return error
-            if (book.price < 0) 
-                return BadRequest(new Error("Negative Price","The price cannot be less than 0."));
-            
-            //If the ISBN has not 13 digitis return error
-            if(book.iSBN.Length != 13) 
-                return BadRequest(new Error("Wrong ISBN", "The ISBN must be 13 digits"));
-           
-            //Add book to the context
-            await service.AddBook(book);
+                //Otherwise return error
+                throw new Exception();
 
-            return Ok(book);
+            } catch (Exception e)
+            {
+                return BadRequest(new MessagingHelper("Error", "Was not possible to add the book", addBook, false));
+            }  
         }
 
         // PUT: api/books/{ISBN}
         [HttpPut("{iSBN}")]
-        public async Task<IActionResult> UpdateBook(string iSBN, UpdateBookRequest updateBook)
+        public async Task<IActionResult> UpdateBook(BookDTO updateBook)
         {
-            //If the ISBN has not 13 digits return errpr
-            if (iSBN.Length != 13) 
-                return BadRequest(new Error("Wrong ISBN", "The ISBN must has 13 digits"));
-
-            //Find the book with the inputed ISBN
-            var book = await service.GetBookByISBN(iSBN);
-
-            //If no book was found return an error
-            if(book==null) 
-                return NotFound(new Error("Book Not Found", $"No book was found with this ISBN: {iSBN}."));
-
-            //If the price is negative return error
-            if (updateBook.price < 0) 
-                return BadRequest(new Error("Negative Price", "The price cannot be less than 0."));
-
-            //If the ISBN has not 13 digits return error
-            if (updateBook.iSBN.Length != 13) 
-                return BadRequest(new Error("Wrong ISBN", "The ISBN must be 13 digits"));
-
-            var dto = new BookDTO()
+            try
             {
-                iSBN = updateBook.iSBN,
-                author = updateBook.author,
-                price = updateBook.price,
-                name = updateBook.name
-            };
+                //Update a book entity
+                MessagingHelper book = service.UpdateBook(updateBook);
 
-            await service.UpdateBookAsync(dto);
+                //Check errors
+                if (!book.Success)
+                {
+                    if (book.Type == ERROR_TYPE_ISBN)
+                    {
+                        //If the ISBN has not 13 digits
+                        return BadRequest(new MessagingHelper("Wrong ISBN", "The ISBN must has 13 digits", updateBook, false));
+                    }
+                    else if (book.Type == ERROR_TYPE_EXISTING_BOOK)
+                    {
+                        //If the ISBN is already used
+                        return BadRequest(new MessagingHelper("Existing Book", $"The ISBN must be unique and there is a book that has already this ISBN.", updateBook, false));
+                    }
+                    else if (book.Type == ERROR_TYPE_PRICE)
+                    {
+                        //If the price is negative
+                        return BadRequest(new MessagingHelper("Price", "The price cannot be less than 0.", updateBook, false));
+                    }
+                    else if (book.Type == ERROR_TYPE_NOCONTENT)
+                    {
+                        //If no book was found
+                        return NoContent();
+                    } else if (book.Type == "Error")
+                    {
+                        //If there was an error
+                        throw new Exception();
+                    }   
+                }
 
-            return Ok(book);
+                //If the book was updated return it
+                if (book.Obj != null)
+                    return Ok(new MessagingHelper("Success", "Book Updated!", book.Obj, true));
+
+                //Otherwise return error
+                throw new Exception();
+
+            } catch (Exception e)
+            {
+                return BadRequest(new MessagingHelper("Error", "Was not possible to update the book", updateBook ,false));
+            }
+            
 
         }
 
@@ -157,20 +246,24 @@ namespace BookSamsysAPI.Controllers
         [Route("{iSBN}")]
         public async Task<IActionResult> deleteBook(string iSBN)
         {
-            //If the ISBN has not 13 digits return errpr
-            if (iSBN.Length != 13) 
-                return BadRequest(new Error("Wrong ISBN", "The ISBN must has 13 digits"));
+            try
+            {
+                //Remove book from DB
+                MessagingHelper message =  service.RemoveBook(iSBN);
 
-            //Find the book with the inputed ISBN
-            var book = await service.GetBookByISBN(iSBN);
+                //If book was not found
+                if(message.Type == ERROR_TYPE_NOCONTENT)
+                    return NoContent();
 
-            //If no book was found return an error
-            if (book == null)
-                return NotFound(new Error("Book Not Found", $"No book was found with this ISBN: {iSBN}."));
+                if(message.Type == "Error")
+                    throw new Exception();
 
-            service.RemoveBook(book);
-
-            return Ok();
+                return Ok(new MessagingHelper("Success!", "The book was removed", true));
+            } catch (Exception e)
+            {
+                return BadRequest(new MessagingHelper("Error", e.Message, false));
+            }
+          
         }
     }
 }

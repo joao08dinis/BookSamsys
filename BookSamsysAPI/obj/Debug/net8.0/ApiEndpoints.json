@@ -19,7 +19,7 @@
     "Parameters": [
       {
         "Name": "addBook",
-        "Type": "BookSamsysAPI.Models.AddBookRequest",
+        "Type": "BookSamsysAPI.Models.DTO.BookDTO",
         "IsRequired": true
       }
     ],
@@ -28,19 +28,19 @@
   {
     "ContainingType": "BookSamsysAPI.Controllers.BooksController",
     "Method": "UpdateBook",
-    "RelativePath": "api/Books/{ISBN}",
+    "RelativePath": "api/Books/{iSBN}",
     "HttpMethod": "PUT",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "ISBN",
-        "Type": "System.String",
+        "Name": "updateBook",
+        "Type": "BookSamsysAPI.Models.DTO.BookDTO",
         "IsRequired": true
       },
       {
-        "Name": "updateBook",
-        "Type": "BookSamsysAPI.Models.UpdateBookRequest",
+        "Name": "iSBN",
+        "Type": "",
         "IsRequired": true
       }
     ],
@@ -49,13 +49,13 @@
   {
     "ContainingType": "BookSamsysAPI.Controllers.BooksController",
     "Method": "deleteBook",
-    "RelativePath": "api/Books/{ISBN}",
+    "RelativePath": "api/Books/{iSBN}",
     "HttpMethod": "DELETE",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "ISBN",
+        "Name": "iSBN",
         "Type": "System.String",
         "IsRequired": true
       }
@@ -65,13 +65,13 @@
   {
     "ContainingType": "BookSamsysAPI.Controllers.BooksController",
     "Method": "GetBookByAuthor",
-    "RelativePath": "api/Books/author/{Author}",
+    "RelativePath": "api/Books/author/{author}",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "Author",
+        "Name": "author",
         "Type": "System.String",
         "IsRequired": true
       }
@@ -81,13 +81,13 @@
   {
     "ContainingType": "BookSamsysAPI.Controllers.BooksController",
     "Method": "GetBookByISBN",
-    "RelativePath": "api/Books/isbn/{ISBN}",
+    "RelativePath": "api/Books/isbn/{iSBN}",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "ISBN",
+        "Name": "iSBN",
         "Type": "System.String",
         "IsRequired": true
       }
@@ -97,13 +97,13 @@
   {
     "ContainingType": "BookSamsysAPI.Controllers.BooksController",
     "Method": "GetBookByName",
-    "RelativePath": "api/Books/name/{Name}",
+    "RelativePath": "api/Books/name/{name}",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "Name",
+        "Name": "name",
         "Type": "System.String",
         "IsRequired": true
       }
