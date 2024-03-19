@@ -1,6 +1,8 @@
 ﻿using BookSamsysAPI.Data;
 using BookSamsysAPI.Models.Doman;
+using BookSamsysAPI.Models.DTO;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
 
 namespace BookSamsysAPI.Repositories
 {
@@ -13,9 +15,22 @@ namespace BookSamsysAPI.Repositories
             this.dbContext = dbContext;
         }
 
-        public async Task<List<Book>> GetBooks()
+        public Book? GetBookById(int id)
         {
-            return await dbContext.Books.ToListAsync();
+            return dbContext.Books.Find(id);
+        }
+
+        public List<Book> GetBooks()
+        {
+            try
+            {
+                return dbContext.Books.ToList();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+
+            }
         }
 
         public void AddBook(Book book)
@@ -33,6 +48,7 @@ namespace BookSamsysAPI.Repositories
         {
             dbContext.Books.Remove(book);
             dbContext.SaveChanges();
+           
         }
 
     }

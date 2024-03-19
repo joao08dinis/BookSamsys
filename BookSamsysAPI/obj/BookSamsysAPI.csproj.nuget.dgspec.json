@@ -1,24 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "E:\\Documentos\\Estagio\\BookSamsys\\BookSamsysAPI\\BookSamsysAPI.csproj": {}
+    "C:\\Users\\Joao Laptop\\Documents\\BookSamsys\\BookSamsysAPI\\BookSamsysAPI.csproj": {}
   },
   "projects": {
-    "E:\\Documentos\\Estagio\\BookSamsys\\BookSamsysAPI\\BookSamsysAPI.csproj": {
+    "C:\\Users\\Joao Laptop\\Documents\\BookSamsys\\BookSamsysAPI\\BookSamsysAPI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\Documentos\\Estagio\\BookSamsys\\BookSamsysAPI\\BookSamsysAPI.csproj",
+        "projectUniqueName": "C:\\Users\\Joao Laptop\\Documents\\BookSamsys\\BookSamsysAPI\\BookSamsysAPI.csproj",
         "projectName": "BookSamsysAPI",
-        "projectPath": "E:\\Documentos\\Estagio\\BookSamsys\\BookSamsysAPI\\BookSamsysAPI.csproj",
-        "packagesPath": "C:\\Users\\Asus\\.nuget\\packages\\",
-        "outputPath": "E:\\Documentos\\Estagio\\BookSamsys\\BookSamsysAPI\\obj\\",
+        "projectPath": "C:\\Users\\Joao Laptop\\Documents\\BookSamsys\\BookSamsysAPI\\BookSamsysAPI.csproj",
+        "packagesPath": "C:\\Users\\Joao Laptop\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Joao Laptop\\Documents\\BookSamsys\\BookSamsysAPI\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "E:\\Program Files (x86)\\Visual Studio\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\Asus\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\Joao Laptop\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -26,7 +22,6 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -50,6 +45,10 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "AutoMapper": {
+              "target": "Package",
+              "version": "[13.0.1, )"
+            },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
               "version": "[8.0.3, )"
@@ -73,6 +72,10 @@
             "Microsoft.VisualStudio.Web.CodeGeneration.Design": {
               "target": "Package",
               "version": "[8.0.2, )"
+            },
+            "ServiceStack.Interfaces": {
+              "target": "Package",
+              "version": "[8.2.2, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",

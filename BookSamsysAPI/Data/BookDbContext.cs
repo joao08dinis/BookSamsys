@@ -9,5 +9,16 @@ namespace BookSamsysAPI.Data
         {
         }
         public DbSet<Book> Books { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Book>()
+                .Property(b => b.id)
+                .ValueGeneratedOnAdd();
+            modelBuilder.Entity<Book>()
+                .Property(b => b.price)
+                .HasColumnType("decimal(18,2)");
+        }
     }
+
 }
